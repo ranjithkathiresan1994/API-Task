@@ -1,0 +1,73 @@
+Feature File
+
+Feature: Verify Scroll Functionality in React JS site tutorial tab
+
+  Scenario: Verify content styling on scrolling
+    Given I navigate to React JS site
+    When I scroll down in the tutorial tab
+    Then the respected content on Right Navigation is Bolded
+    And a Blue color line is seen
+
+
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.When;
+import io.cucumber.java.en.Then;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import static org.junit.Assert.assertTrue;
+
+public class ReactJSSteps {
+
+    WebDriver driver; // Initialize this WebDriver in your test setup
+
+    @Given("I navigate to React JS site")
+    public void navigateToReactJS() {
+        // Navigate to React JS site
+        driver.get("https://legacy.reactjs.org/");
+    }
+
+    @When("I scroll down in the tutorial tab")
+    public void scrollDownInTutorialTab() {
+        // Assuming the tutorial tab has a specific identifier, adjust accordingly
+        WebElement tutorialTab = driver.findElement(By.id("tutorial-tab"));
+
+        // Scroll down using JavaScript executor
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView();", tutorialTab);
+    }
+
+    @Then("the respected content on Right Navigation is Bolded")
+    public void verifyContentIsBolded() {
+        // Assuming the right navigation content has a specific identifier, adjust accordingly
+        WebElement rightNavContent = driver.findElement(By.id("right-nav-content"));
+
+        // Verify content is bolded
+        assertTrue(rightNavContent.getCssValue("font-weight").equals("bold"));
+    }
+
+    @Then("a Blue color line is seen")
+    public void verifyBlueColorLine() {
+        // Assuming the blue color line has a specific identifier, adjust accordingly
+        WebElement blueColorLine = driver.findElement(By.id("blue-color-line"));
+
+        // Verify blue color
+        assertTrue(blueColorLine.getCssValue("color").equalsIgnoreCase("blue"));
+    }
+}
+RunCucumberTest.java:
+
+java
+Copy code
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import org.junit.runner.RunWith;
+
+@RunWith(Cucumber.class)
+@CucumberOptions(
+        features = "src/test/resources/features",
+        glue = "stepdefinitions"
+)
+public class RunCucumberTest {
+}

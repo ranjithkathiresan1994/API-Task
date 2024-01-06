@@ -1,0 +1,70 @@
+package com.basicprograms;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class CoinmapApiExample {
+
+    public static void main(String[] args) {
+        try {
+            // Make a GET request
+            String apiUrl = "https://coinmap.org/api/v1/venues/";
+            HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
+            connection.setRequestMethod("GET");
+
+            // Check if the request was successful (status code 200)
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) {
+                // Read the response
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                // Process JSON data
+                JSONObject jsonData = new JSONObject(response.toString());
+                processCoinmapData(jsonData);
+            } else {
+                // Print an error message if the request was not successful
+                System.out.println("Error: " + responseCode);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void processCoinmapData(JSONObject data) {
+        if (data != null) {
+            // Get the count of categories
+            Set<String> categories = new HashSet<>();
+            JSONArray venues = data.getJSONArray("venues");
+            for (int i = 0; i < venues.length(); i++) {
+                JSONObject venue = venues.getJSONObject(i);
+                categories.add(venue.getString("category"));
+            }
+
+            // Get the names and geo locations of venues in the "food" category
+            System.out.println("Number of categories: " + categories.size());
+            System.out.println("\nFood Venues:");
+            for (int i = 0; i < venues.length(); i++) {
+                JSONObject venue = venues.getJSONObject(i);
+                if ("food".equals(venue.getString("category"))) {
+                    System.out.println("Name: " + venue.getString("name") + ", Geo Location: " + venue.getJSONObject("geolocation"));
+                }
+            }
+        } else {
+            System.out.println("Unable to fetch data from the API.");
+        }
+    }
+}
